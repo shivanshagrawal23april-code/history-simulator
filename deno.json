@@ -1,0 +1,12 @@
+{
+  "lint": {
+    "exclude": [
+      "routeTree.gen.ts",
+      "client.ts",
+      "client.server.ts",
+      "auth-middleware.ts",
+      "auth-attacher.ts",
+      "next.config.js"
+    ]
+  }
+}

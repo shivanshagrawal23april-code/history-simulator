@@ -2,7 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useChat } from "@ai-sdk/react";
 import { DefaultChatTransport, type UIMessage } from "ai";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Mic, MicOff, Square, ArrowLeft, Volume2, VolumeX, Sparkles, Loader2 } from "lucide-react";
+import { Mic, Square, ArrowLeft, Volume2, VolumeX, Sparkles, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import logoSrc from "@/assets/logo.png";
 import { StructuredMessage } from "@/components/structured-message";
