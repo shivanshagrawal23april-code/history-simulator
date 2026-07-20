@@ -202,6 +202,13 @@ export const Route = createFileRoute("/api/chat")({
         if (!Array.isArray(messages)) {
           return new Response("Messages are required", { status: 400 });
         }
+        if (messages.length === 0 || messages.length > 100) {
+          return new Response("Invalid number of messages", { status: 400 });
+        }
+        const totalChars = JSON.stringify(messages).length;
+        if (totalChars > 200_000) {
+          return new Response("Payload too large", { status: 413 });
+        }
 
         const key = process.env.LOVABLE_API_KEY;
         if (!key) {
