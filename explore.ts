@@ -52,12 +52,17 @@ export const Route = createFileRoute("/api/explore")({
   server: {
     handlers: {
       POST: async ({ request }) => {
-        const body = (await request.json()) as {
+        let body: {
           lastUser?: string;
           lastAssistant?: string;
           modeId?: string | null;
           language?: string;
         };
+        try {
+          body = await request.json();
+        } catch {
+          return new Response("Invalid JSON request body", { status: 400 });
+        }
 
         const lastUser = (body.lastUser ?? "").slice(0, 1500);
         const lastAssistant = (body.lastAssistant ?? "").slice(0, 6000);

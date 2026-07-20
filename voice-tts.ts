@@ -6,7 +6,13 @@ export const Route = createFileRoute("/api/voice-tts")({
   server: {
     handlers: {
       POST: async ({ request }) => {
-        const { text, voice } = (await request.json()) as Body;
+        let text: unknown;
+        let voice: unknown;
+        try {
+          ({ text, voice } = (await request.json()) as Body);
+        } catch {
+          return new Response("Invalid JSON request body", { status: 400 });
+        }
         if (typeof text !== "string" || !text.trim()) {
           return new Response("text required", { status: 400 });
         }
@@ -17,24 +23,32 @@ export const Route = createFileRoute("/api/voice-tts")({
         const input = text.slice(0, 3500);
         const v = typeof voice === "string" ? voice : "sage";
 
-        const upstream = await fetch(
-          "https://ai.gateway.lovable.dev/v1/audio/speech",
-          {
-            method: "POST",
-            headers: {
-              "Lovable-API-Key": key,
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              model: "openai/gpt-4o-mini-tts",
-              input,
-              voice: v,
-              response_format: "mp3",
-              instructions:
-                "Speak as a warm, knowledgeable documentary historian. Calm, measured pacing, clear enunciation, gentle gravitas. Bring stories to life without melodrama.",
-            }),
-          }
-        );
+        let upstream: Response;
+        try {
+          upstream = await fetch(
+            "https://ai.gateway.lovable.dev/v1/audio/speech",
+            {
+              method: "POST",
+              headers: {
+                "Lovable-API-Key": key,
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                model: "openai/gpt-4o-mini-tts",
+                input,
+                voice: v,
+                response_format: "mp3",
+                instructions:
+                  "Speak as a warm, knowledgeable documentary historian. Calm, measured pacing, clear enunciation, gentle gravitas. Bring stories to life without melodrama.",
+              }),
+            }
+          );
+        } catch (err) {
+          console.error("[voice-tts] upstream request failed", err);
+          return new Response("Failed to reach the text-to-speech service", {
+            status: 502,
+          });
+        }
 
         if (!upstream.ok) {
           const errText = await upstream.text().catch(() => "");
