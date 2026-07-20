@@ -6,16 +6,6 @@ import {
   Plus,
   Trash2,
   ArrowLeft,
-  Compass,
-  GitBranch,
-  Crown,
-  Users,
-  Milestone,
-  Globe2,
-  Scale,
-  Telescope,
-  BookMarked,
-  GraduationCap,
   Sparkles,
   ChevronDown,
   RefreshCw,
@@ -25,7 +15,6 @@ import {
   Mic,
   MicOff,
   Languages,
-  type LucideIcon,
 } from "lucide-react";
 import { StructuredMessage } from "@/components/structured-message";
 import { ExplorationPaths } from "@/components/exploration-paths";
@@ -63,19 +52,8 @@ import {
   type Thread,
 } from "@/lib/historyverse-storage";
 import { MODES, getMode, type ModeId } from "@/lib/historyverse-modes";
-
-const ICONS: Record<string, LucideIcon> = {
-  Compass,
-  GitBranch,
-  Crown,
-  Users,
-  Milestone,
-  Globe2,
-  Scale,
-  Telescope,
-  BookMarked,
-  GraduationCap,
-};
+import { getModeIcon } from "@/lib/mode-icons";
+import { extractText } from "@/lib/message-utils";
 
 type ChatSearch = { q?: string };
 
@@ -265,7 +243,7 @@ function ChatShell({
     }
   };
 
-  const Icon = ICONS[mode.icon] ?? Sparkles;
+  const Icon = getModeIcon(mode.icon);
   const isLoading = status === "submitted" || status === "streaming";
 
   return (
@@ -305,7 +283,7 @@ function ChatShell({
           <ul className="space-y-1">
             {threads.map((t) => {
               const tMode = getMode(t.modeId);
-              const TIcon = ICONS[tMode.icon] ?? Sparkles;
+              const TIcon = getModeIcon(tMode.icon);
               const active = t.id === threadId;
               return (
                 <li
@@ -438,7 +416,7 @@ function ChatShell({
               </SelectTrigger>
               <SelectContent>
                 {MODES.map((m) => {
-                  const MIcon = ICONS[m.icon] ?? Sparkles;
+                  const MIcon = getModeIcon(m.icon);
                   return (
                     <SelectItem key={m.id} value={m.id}>
                       <span className="inline-flex items-center gap-2">
@@ -631,9 +609,3 @@ function SuggestionButton({
   );
 }
 
-function extractText(m: UIMessage): string {
-  if (!m.parts) return "";
-  return m.parts
-    .map((p) => (p.type === "text" ? p.text : ""))
-    .join("");
-}

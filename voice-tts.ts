@@ -1,4 +1,10 @@
 import { createFileRoute } from "@tanstack/react-router";
+import {
+  LOVABLE_AI_GATEWAY_BASE_URL,
+  getLovableApiKey,
+  lovableGatewayHeaders,
+  missingApiKeyResponse,
+} from "@/lib/ai-gateway.server";
 
 type Body = { text?: unknown; voice?: unknown };
 
@@ -10,19 +16,19 @@ export const Route = createFileRoute("/api/voice-tts")({
         if (typeof text !== "string" || !text.trim()) {
           return new Response("text required", { status: 400 });
         }
-        const key = process.env.LOVABLE_API_KEY;
-        if (!key) return new Response("Missing LOVABLE_API_KEY", { status: 500 });
+        const key = getLovableApiKey();
+        if (!key) return missingApiKeyResponse();
 
         // Cap input to stay well under model limits
         const input = text.slice(0, 3500);
         const v = typeof voice === "string" ? voice : "sage";
 
         const upstream = await fetch(
-          "https://ai.gateway.lovable.dev/v1/audio/speech",
+          `${LOVABLE_AI_GATEWAY_BASE_URL}/audio/speech`,
           {
             method: "POST",
             headers: {
-              "Lovable-API-Key": key,
+              ...lovableGatewayHeaders(key),
               "Content-Type": "application/json",
             },
             body: JSON.stringify({
