@@ -1,13 +1,14 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { generateText } from "ai";
-import { createLovableAiGatewayProvider } from "@/lib/ai-gateway.server";
+import {
+  createLovableModel,
+  getLovableApiKey,
+  missingApiKeyResponse,
+} from "@/lib/ai-gateway.server";
 import { getMode } from "@/lib/historyverse-modes";
+import type { ExplorationSuggestion } from "@/lib/exploration";
 
-export type ExplorationSuggestion = {
-  label: string;
-  prompt: string;
-  category: string;
-};
+export type { ExplorationSuggestion };
 
 const CATEGORIES = [
   "Chronological",
@@ -67,8 +68,8 @@ export const Route = createFileRoute("/api/explore")({
           return Response.json({ suggestions: [] });
         }
 
-        const key = process.env.LOVABLE_API_KEY;
-        if (!key) return new Response("Missing LOVABLE_API_KEY", { status: 500 });
+        const key = getLovableApiKey();
+        if (!key) return missingApiKeyResponse();
 
         const mode = getMode(body.modeId ?? null);
 
@@ -104,8 +105,7 @@ ${lastAssistant}
 Now produce the JSON of 4–6 next-direction suggestions.`;
 
         try {
-          const gateway = createLovableAiGatewayProvider(key);
-          const model = gateway("google/gemini-3-flash-preview");
+          const model = createLovableModel(key);
           const { text } = await generateText({ model, system, prompt: userMsg });
           return Response.json({ suggestions: parseSuggestions(text) });
         } catch (err) {

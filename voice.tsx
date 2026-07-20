@@ -1,12 +1,13 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useChat } from "@ai-sdk/react";
-import { DefaultChatTransport, type UIMessage } from "ai";
+import { DefaultChatTransport } from "ai";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Mic, MicOff, Square, ArrowLeft, Volume2, VolumeX, Sparkles, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import logoSrc from "@/assets/logo.png";
 import { StructuredMessage } from "@/components/structured-message";
 import { ExplorationPaths } from "@/components/exploration-paths";
+import { extractText } from "@/lib/message-utils";
 
 export const Route = createFileRoute("/voice")({
   head: () => ({
@@ -34,13 +35,6 @@ type SRType = {
   onerror: (e: { error?: string }) => void;
   onend: () => void;
 };
-
-function extractText(m: UIMessage): string {
-  return m.parts
-    .map((p) => (p.type === "text" ? p.text : ""))
-    .join("")
-    .trim();
-}
 
 // Pull the most "speakable" portion of a structured answer.
 function buildSpokenScript(full: string): string {
@@ -171,7 +165,7 @@ function VoicePage() {
     const last = [...messages].reverse().find((m) => m.role === "assistant");
     if (!last) return;
     if (lastSpokenIdRef.current === last.id) return;
-    const text = extractText(last);
+    const text = extractText(last).trim();
     if (!text) return;
     lastSpokenIdRef.current = last.id;
     const script = buildSpokenScript(text);
@@ -366,7 +360,7 @@ function VoicePage() {
         {messages.length > 0 && (
           <div className="mt-14 space-y-10">
             {messages.map((m) => {
-              const text = extractText(m);
+              const text = extractText(m).trim();
               if (m.role === "user") {
                 return (
                   <div key={m.id} className="flex justify-end">
@@ -400,7 +394,7 @@ function VoicePage() {
                     <div className="mt-6">
                       <ExplorationPaths
                         messageId={m.id}
-                        lastUser={extractText(lastUser)}
+                        lastUser={extractText(lastUser).trim()}
                         lastAssistant={text}
                         modeId="explorer"
                         depth="standard"

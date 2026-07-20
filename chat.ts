@@ -1,6 +1,10 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { convertToModelMessages, streamText, type UIMessage } from "ai";
-import { createLovableAiGatewayProvider } from "@/lib/ai-gateway.server";
+import {
+  createLovableModel,
+  getLovableApiKey,
+  missingApiKeyResponse,
+} from "@/lib/ai-gateway.server";
 import { getMode } from "@/lib/historyverse-modes";
 
 type ChatRequestBody = {
@@ -203,10 +207,8 @@ export const Route = createFileRoute("/api/chat")({
           return new Response("Messages are required", { status: 400 });
         }
 
-        const key = process.env.LOVABLE_API_KEY;
-        if (!key) {
-          return new Response("Missing LOVABLE_API_KEY", { status: 500 });
-        }
+        const key = getLovableApiKey();
+        if (!key) return missingApiKeyResponse();
 
         const mode = getMode(typeof body.modeId === "string" ? body.modeId : null);
         const depth = typeof body.depth === "string" ? body.depth : "standard";
@@ -214,8 +216,7 @@ export const Route = createFileRoute("/api/chat")({
         const depthMod = DEPTH_MODIFIERS[depth] ?? DEPTH_MODIFIERS.standard;
         const langMod = LANGUAGE_MODIFIERS[language] ?? LANGUAGE_MODIFIERS.en;
 
-        const gateway = createLovableAiGatewayProvider(key);
-        const model = gateway("google/gemini-3-flash-preview");
+        const model = createLovableModel(key);
 
         const result = streamText({
           model,

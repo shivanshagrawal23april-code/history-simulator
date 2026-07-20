@@ -1,11 +1,8 @@
 import { useEffect, useState } from "react";
 import { Compass, RefreshCw, Sparkles } from "lucide-react";
+import type { ExplorationSuggestion } from "@/lib/exploration";
 
-export type ExplorationSuggestion = {
-  label: string;
-  prompt: string;
-  category: string;
-};
+export type { ExplorationSuggestion };
 
 type Props = {
   messageId: string;

@@ -1,20 +1,6 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
-import {
-  Compass,
-  GitBranch,
-  Crown,
-  Users,
-  Milestone,
-  Globe2,
-  Scale,
-  Telescope,
-  BookMarked,
-  GraduationCap,
-  ArrowRight,
-  ArrowUpRight,
-  type LucideIcon,
-} from "lucide-react";
+import { ArrowRight, ArrowUpRight } from "lucide-react";
 import logoSrc from "@/assets/logo.png";
 import heroMonument from "@/assets/hero-monument.jpg";
 import heroCollage from "@/assets/hero-collage.jpg";
@@ -24,19 +10,7 @@ import {
   newThread,
   saveThreads,
 } from "@/lib/historyverse-storage";
-
-const ICONS: Record<string, LucideIcon> = {
-  Compass,
-  GitBranch,
-  Crown,
-  Users,
-  Milestone,
-  Globe2,
-  Scale,
-  Telescope,
-  BookMarked,
-  GraduationCap,
-};
+import { getModeIcon } from "@/lib/mode-icons";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -305,7 +279,7 @@ function Landing() {
         <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-3">
           {featuredPrompts.map((p, i) => {
             const mode = MODES.find((m) => m.id === p.mode)!;
-            const Icon = ICONS[mode.icon];
+            const Icon = getModeIcon(mode.icon);
             return (
               <button
                 key={p.text}
@@ -357,7 +331,7 @@ function Landing() {
         </div>
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
           {MODES.map((mode, i) => {
-            const Icon = ICONS[mode.icon];
+            const Icon = getModeIcon(mode.icon);
             return (
               <button
                 key={mode.id}
