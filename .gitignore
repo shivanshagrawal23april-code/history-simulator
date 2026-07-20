@@ -3,8 +3,11 @@ node_modules
 build
 out
 dist
-.env.local
-.env.local.example
+env
+.env
+.env.*
+!.env.local.example
+.dev.vars
 .DS_Store
 *.log
 *.pem
