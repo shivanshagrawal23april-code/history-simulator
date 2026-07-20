@@ -1,3 +1,4 @@
+import process from "node:process";
 import { createOpenAICompatible } from "@ai-sdk/openai-compatible";
 
 export const LOVABLE_AI_GATEWAY_BASE_URL = "https://ai.gateway.lovable.dev/v1";
