@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { generateText } from "ai";
 import { createLovableAiGatewayProvider } from "@/lib/ai-gateway.server";
 import { getMode } from "@/lib/historyverse-modes";
+import process from "node:process";
 
 export type ExplorationSuggestion = {
   label: string;

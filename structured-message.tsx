@@ -223,7 +223,7 @@ function CitedProse({ children }: { children: string }) {
 function parseSections(text: string): { intro: string; sections: Section[] } {
   const lines = text.split("\n");
   const sections: Section[] = [];
-  let intro: string[] = [];
+  const intro: string[] = [];
   let current: Section | null = null;
   for (const line of lines) {
     const m = /^##\s+(.+?)\s*$/.exec(line);
@@ -363,7 +363,7 @@ function GraphCard({
 }
 
 function SimpleGraphExplain({ headers, rows }: { headers: string[]; rows: string[][] }) {
-  const numericCol = headers.slice(1).find((h, i) => rows.every((r) => toNumber(r[i + 1]) !== null));
+  const numericCol = headers.slice(1).find((_h, i) => rows.every((r) => toNumber(r[i + 1]) !== null));
   if (!numericCol) {
     return <div>This table compares <strong>{headers.join(", ")}</strong> across {rows.length} entries so you can spot patterns at a glance.</div>;
   }
